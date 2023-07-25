@@ -1,0 +1,120 @@
+﻿@page "/characters"
+@inject HttpClient Http
+@using Microsoft.AspNetCore.Components
+
+@*Elimina el estilo predeterminado*@
+<style>
+    .click-btn {
+        background: none;
+        border: none;
+        box-shadow: none;
+    }
+</style>
+
+<PageTitle>Characters</PageTitle>
+
+<h1>Information</h1>
+
+<button type="button" class="btn btn-success" @onclick="ShowInformation">
+    Show information
+</button>
+
+<button type="button" class="btn btn-danger" @onclick="HideInformation">
+    Hide information
+</button>
+
+@if (showTable)
+{
+    @if (characters == null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Name</th>
+                    <th>Status</th>
+                    <th>Species</th>
+                    <th>Gender</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var character in characters)
+                {
+                    <tr>
+                        <td>@character.Id</td>
+                        <td>
+                            <button class="click-btn" @onclick="() => NavigateToCharacterDetails(character.Id)">@character.Name</button>
+                        </td>
+                        <td>@character.Status</td>
+                        <td>@character.Species</td>
+                        <td>@character.Gender</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+}
+
+@code {
+    private List<Character>? characters;
+    private bool showTable = false; // Variable para controlar la visibilidad de la tabla
+
+    [Inject]
+    private NavigationManager NavigationManager { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadCharactersAsync();
+    }
+
+    private async Task LoadCharactersAsync()
+    {
+        var response = await Http.GetAsync("https://rickandmortyapi.com/api/character");
+
+        if (response.IsSuccessStatusCode)
+        {
+            var json = await response.Content.ReadAsStringAsync();
+            var result = Newtonsoft.Json.JsonConvert.DeserializeObject<ApiResponse>(json);
+            characters = result?.Results;
+        }
+        else
+        {
+            // Handle error case here
+            characters = new List<Character>();
+        }
+    }
+
+    private void NavigateToCharacterDetails(int characterId)
+    {
+        NavigationManager.NavigateTo($"/character/{characterId}");
+    }
+
+    public class ApiResponse
+    {
+        public List<Character>? Results { get; set; }
+    }
+
+    //Entidad Personaje
+    public class Character
+    {
+        public int Id { get; set; }
+        public string? Name { get; set; }
+        public string? Status { get; set; }
+        public string? Species { get; set; }
+        public string? Gender { get; set; }
+    }
+
+    private void ShowInformation()
+    {
+        showTable = true;
+    }
+
+    private void HideInformation()
+    {
+        showTable = false;
+    }
+}

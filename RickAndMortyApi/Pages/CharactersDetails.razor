@@ -1,0 +1,61 @@
+﻿@page "/character/{characterId:int}"
+@inject HttpClient Http
+
+<PageTitle>Character Details</PageTitle>
+
+<h1>Information Character</h1>
+
+@if (character == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <p><strong>Name:</strong> @character.Name</p>
+    <p><strong>Status:</strong> @character.Status</p>
+    <p><strong>Species:</strong> @character.Species</p>
+    <p><strong>Gender:</strong> @character.Gender</p>
+@*    Muestra la imagen del personaje*@
+    @if (!string.IsNullOrEmpty(character.Image))
+    {
+        <img src="@character.Image" alt="@character.Name" style="max-width: 300px;" />
+    }
+}
+
+@code {
+    private Character character;
+
+    [Parameter]
+    public int CharacterId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadCharacterAsync();
+    }
+
+    private async Task LoadCharacterAsync()
+    {
+        var response = await Http.GetAsync($"https://rickandmortyapi.com/api/character/{CharacterId}");
+
+        if (response.IsSuccessStatusCode)
+        {
+            var json = await response.Content.ReadAsStringAsync();
+            character = Newtonsoft.Json.JsonConvert.DeserializeObject<Character>(json);
+        }
+        else
+        {
+            character = null;
+        }
+    }
+
+    //Entidad Personaje
+    public class Character
+    {
+        public int Id { get; set; }
+        public string? Name { get; set; }
+        public string? Status { get; set; }
+        public string? Species { get; set; }
+        public string? Gender { get; set; }
+        public string? Image { get; set; } 
+    }
+}
