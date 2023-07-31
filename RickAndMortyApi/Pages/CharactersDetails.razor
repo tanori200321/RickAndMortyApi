@@ -1,26 +1,50 @@
 ﻿@page "/character/{characterId:int}"
 @inject HttpClient Http
 
+@*Estilo Card*@
+<style>
+    .character-card {
+        border: 1px solid #ccc;
+        border-radius: 15px;
+        padding: 49px;
+        max-width: 400px;
+        margin: 0 auto;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+        .character-card img {
+            display: block;
+            margin: 16px auto;
+
+        }
+</style>
+
+
 <PageTitle>Character Details</PageTitle>
 
 <h1>Information Character</h1>
 
-@if (character == null)
-{
-    <p><em>Loading...</em></p>
-}
-else
-{
-    <p><strong>Name:</strong> @character.Name</p>
-    <p><strong>Status:</strong> @character.Status</p>
-    <p><strong>Species:</strong> @character.Species</p>
-    <p><strong>Gender:</strong> @character.Gender</p>
-@*    Muestra la imagen del personaje*@
-    @if (!string.IsNullOrEmpty(character.Image))
+<div class="character-card">
+    @if (character == null)
     {
-        <img src="@character.Image" alt="@character.Name" style="max-width: 300px;" />
+        <p><em>Loading...</em></p>
     }
-}
+    else
+    {
+        @if (!string.IsNullOrEmpty(character.Image))
+        {
+            <img src="@character.Image" alt="@character.Name" style="max-width: 300px;" />
+        }
+        <p><strong>Name:</strong> @character.Name</p>
+        <p><strong>Status:</strong> @character.Status</p>
+        <p><strong>Species:</strong> @character.Species</p>
+        <p><strong>Gender:</strong> @character.Gender</p>
+        @* Muestra la imagen del personaje *@
+
+    }
+</div>
+
+
 
 @code {
     private Character character;
