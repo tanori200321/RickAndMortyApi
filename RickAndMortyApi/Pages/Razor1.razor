@@ -1,0 +1,17 @@
+﻿<h3>Razor1</h3>
+<button @onclick="MostrarRazor2">Mostrar Razor2</button>
+@page "/razor1"
+
+@if (mostrarRazor2)
+{
+    <Razor2 />
+}
+
+@code {
+    private bool mostrarRazor2 = false;
+
+    private void MostrarRazor2()
+    {
+        mostrarRazor2 = true;
+    }
+}

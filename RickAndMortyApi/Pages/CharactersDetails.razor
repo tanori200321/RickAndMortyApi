@@ -1,50 +1,72 @@
-﻿@page "/character/{characterId:int}"
-@inject HttpClient Http
+﻿@inject HttpClient Http
 
-@*Estilo Card*@
 <style>
+    .character-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
     .character-card {
         border: 1px solid #ccc;
         border-radius: 15px;
         padding: 49px;
         max-width: 400px;
-        margin: 0 auto;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        background-color: #fff;
     }
 
         .character-card img {
             display: block;
             margin: 16px auto;
-
+            max-width: 300px;
         }
+
+    .status-circle {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        display: inline-block;
+    }
+
+    .active {
+        background-color: green;
+    }
+
+    .inactive {
+        background-color: red;
+    }
 </style>
 
-
-<PageTitle>Character Details</PageTitle>
-
-<h1>Information Character</h1>
-
-<div class="character-card">
-    @if (character == null)
-    {
-        <p><em>Loading...</em></p>
-    }
-    else
-    {
-        @if (!string.IsNullOrEmpty(character.Image))
+<div class="character-overlay">
+    <div class="character-card">
+        @if (character == null)
         {
-            <img src="@character.Image" alt="@character.Name" style="max-width: 300px;" />
+            <p><em>Loading...</em></p>
         }
-        <p><strong>Name:</strong> @character.Name</p>
-        <p><strong>Status:</strong> @character.Status</p>
-        <p><strong>Species:</strong> @character.Species</p>
-        <p><strong>Gender:</strong> @character.Gender</p>
-        @* Muestra la imagen del personaje *@
-
-    }
+        else
+        {
+            @if (!string.IsNullOrEmpty(character.Image))
+            {
+                <img src="@character.Image" alt="@character.Name" />
+            }
+            <p><strong>Name:</strong> @character.Name</p>
+            <p>
+                <strong>Status:</strong>
+                <span class="status-circle @(character.Status == "Alive" ? "active" : "inactive")"></span>
+                @character.Status
+            </p>
+            <p><strong>Species:</strong> @character.Species</p>
+            <p><strong>Gender:</strong> @character.Gender</p>
+        }
+    </div>
 </div>
-
-
 
 @code {
     private Character character;
@@ -72,7 +94,6 @@
         }
     }
 
-    //Entidad Personaje
     public class Character
     {
         public int Id { get; set; }
@@ -80,6 +101,6 @@
         public string? Status { get; set; }
         public string? Species { get; set; }
         public string? Gender { get; set; }
-        public string? Image { get; set; } 
+        public string? Image { get; set; }
     }
 }

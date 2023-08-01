@@ -2,26 +2,33 @@
 @inject HttpClient Http
 @using Microsoft.AspNetCore.Components
 
-@*Elimina el estilo predeterminado*@
 <style>
     .click-btn {
         background: none;
         border: none;
         box-shadow: none;
     }
+
+    .btn-margin {
+        margin-right: 10px;
+    }
+
 </style>
 
 <PageTitle>Characters</PageTitle>
 
 <h1>Information</h1>
 
-<button type="button" class="btn btn-success" @onclick="ShowInformation">
-    Show information
-</button>
+@if (!showCharacterDetails)
+{
+    <button type="button" class="btn btn-success btn-margin" @onclick="ShowInformation">
+        Show information
+    </button>
 
-<button type="button" class="btn btn-danger" @onclick="HideInformation">
-    Hide information
-</button>
+    <button type="button" class="btn btn-danger btn-margin" @onclick="HideInformation">
+        Hide information
+    </button>
+}
 
 @if (showTable)
 {
@@ -47,7 +54,7 @@
                     <tr>
                         <td>@character.Id</td>
                         <td>
-                            <button class="click-btn" @onclick="() => NavigateToCharacterDetails(character.Id)">@character.Name</button>
+                            <button class="click-btn" @onclick="() => ShowCharacterDetails(character.Id)">@character.Name</button>
                         </td>
                         <td>@character.Status</td>
                         <td>@character.Species</td>
@@ -59,9 +66,16 @@
     }
 }
 
+@if (showCharacterDetails)
+{
+    <CharactersDetails CharacterId="@selectedCharacterId" />
+}
+
 @code {
     private List<Character>? characters;
     private bool showTable = false;
+    private bool showCharacterDetails = false;
+    private int selectedCharacterId;
 
     [Inject]
     private NavigationManager NavigationManager { get; set; }
@@ -83,29 +97,8 @@
         }
         else
         {
-            // Handle error case here
             characters = new List<Character>();
         }
-    }
-
-    private void NavigateToCharacterDetails(int characterId)
-    {
-        NavigationManager.NavigateTo($"/character/{characterId}");
-    }
-
-    public class ApiResponse
-    {
-        public List<Character>? Results { get; set; }
-    }
-
-    //Entidad Personaje
-    public class Character
-    {
-        public int Id { get; set; }
-        public string? Name { get; set; }
-        public string? Status { get; set; }
-        public string? Species { get; set; }
-        public string? Gender { get; set; }
     }
 
     private void ShowInformation()
@@ -116,5 +109,31 @@
     private void HideInformation()
     {
         showTable = false;
+        HideCharacterDetails();
+    }
+
+    private void ShowCharacterDetails(int characterId)
+    {
+        selectedCharacterId = characterId;
+        showCharacterDetails = true;
+    }
+
+    private void HideCharacterDetails()
+    {
+        showCharacterDetails = false;
+    }
+
+    public class ApiResponse
+    {
+        public List<Character>? Results { get; set; }
+    }
+
+    public class Character
+    {
+        public int Id { get; set; }
+        public string? Name { get; set; }
+        public string? Status { get; set; }
+        public string? Species { get; set; }
+        public string? Gender { get; set; }
     }
 }
