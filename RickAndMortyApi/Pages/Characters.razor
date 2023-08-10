@@ -19,16 +19,18 @@
 
 <h1>Information</h1>
 
-@if (!showCharacterDetails)
+@*@if (!showCharacterDetails)
 {
-    <button type="button" class="btn btn-success btn-margin" @onclick="ShowInformation">
-        Show information
-    </button>
 
-    <button type="button" class="btn btn-danger btn-margin" @onclick="HideInformation">
-        Hide information
-    </button>
-}
+}*@
+
+<button type="button" class="btn btn-success btn-margin" @onclick="ShowInformation">
+    Show information
+</button>
+
+<button type="button" class="btn btn-danger btn-margin" @onclick="HideInformation">
+    Hide information
+</button>
 
 @if (showTable)
 {
@@ -46,6 +48,7 @@
                     <th>Status</th>
                     <th>Species</th>
                     <th>Gender</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
@@ -59,6 +62,14 @@
                         <td>@character.Status</td>
                         <td>@character.Species</td>
                         <td>@character.Gender</td>
+                        <td>
+                            <button type="button" class="btn btn-success btn-margin">
+                                PDF
+                            </button>
+                            <button type="button" class="btn btn-success btn-margin">
+                                TXT
+                            </button>
+                        </td>
                     </tr>
                 }
             </tbody>
@@ -137,3 +148,4 @@
         public string? Gender { get; set; }
     }
 }
+
