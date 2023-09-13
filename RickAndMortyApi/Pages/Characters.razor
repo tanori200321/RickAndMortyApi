@@ -1,6 +1,6 @@
-﻿@page "/characters"
+﻿@page "/"
 @inject HttpClient Http
-@using Microsoft.AspNetCore.Components
+@using RickAndMortyApi.Models
 
 <style>
     .click-btn {
@@ -13,16 +13,19 @@
         margin-right: 10px;
     }
 
+    .gender-circle {
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        margin-right: 5px;
+        vertical-align: middle;
+    }
 </style>
 
 <PageTitle>Characters</PageTitle>
 
 <h1>Information</h1>
-
-@*@if (!showCharacterDetails)
-{
-
-}*@
 
 <button type="button" class="btn btn-success btn-margin" @onclick="ShowInformation">
     Show information
@@ -31,6 +34,16 @@
 <button type="button" class="btn btn-danger btn-margin" @onclick="HideInformation">
     Hide information
 </button>
+<br />
+<br>
+<div class="form-group">
+    <label for="genderFilter">Filter by Gender:</label>
+    <select class="form-control" id="genderFilter" @onchange="SetGenderFilter">
+        <option value="All">All</option>
+        <option value="Male">Male</option>
+        <option value="Female">Female</option>
+    </select>
+</div>
 
 @if (showTable)
 {
@@ -54,23 +67,28 @@
             <tbody>
                 @foreach (var character in characters)
                 {
-                    <tr>
-                        <td>@character.Id</td>
-                        <td>
-                            <button class="click-btn" @onclick="() => ShowCharacterDetails(character.Id)">@character.Name</button>
-                        </td>
-                        <td>@character.Status</td>
-                        <td>@character.Species</td>
-                        <td>@character.Gender</td>
-                        <td>
-                            <button type="button" class="btn btn-success btn-margin">
-                                PDF
-                            </button>
-                            <button type="button" class="btn btn-success btn-margin">
-                                TXT
-                            </button>
-                        </td>
-                    </tr>
+                    if (selectedGenderFilter == "All" || character.Gender == selectedGenderFilter)
+                    {
+                        <tr>
+                            <td>@character.Id</td>
+                            <td>
+                                <button class="click-btn" @onclick="() => ShowCharacterDetails(character.Id)">@character.Name</button>
+                            </td>
+                            <td>@character.Status</td>
+                            <td>@character.Species</td>
+                            <td>@character.Gender</td>
+                            <td>
+                                @if (character.Gender == "Female")
+                                {
+                                    <span class="gender-circle" style="background-color: deeppink;"></span>
+                                }
+                                else if (character.Gender == "Male")
+                                {
+                                    <span class="gender-circle" style="background-color: dodgerblue;"></span>
+                                }
+                            </td>
+                        </tr>
+                    }
                 }
             </tbody>
         </table>
@@ -87,6 +105,7 @@
     private bool showTable = false;
     private bool showCharacterDetails = false;
     private int selectedCharacterId;
+    private string selectedGenderFilter = "All";
 
     [Inject]
     private NavigationManager NavigationManager { get; set; }
@@ -134,18 +153,14 @@
         showCharacterDetails = false;
     }
 
+    private void SetGenderFilter(ChangeEventArgs e)
+    {
+        selectedGenderFilter = e.Value.ToString();
+    }
+
     public class ApiResponse
     {
         public List<Character>? Results { get; set; }
     }
 
-    public class Character
-    {
-        public int Id { get; set; }
-        public string? Name { get; set; }
-        public string? Status { get; set; }
-        public string? Species { get; set; }
-        public string? Gender { get; set; }
-    }
 }
-
