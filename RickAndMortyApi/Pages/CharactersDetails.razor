@@ -45,8 +45,6 @@
     }
 </style>
 
-
-
 <div class="character-overlay">
     <div class="character-card">
         @if (character == null)
@@ -71,29 +69,3 @@
     </div>
 </div>
 
-@code {
-    private Character character;
-
-    [Parameter]
-    public int CharacterId { get; set; }
-
-    protected override async Task OnInitializedAsync()
-    {
-        await LoadCharacterAsync();
-    }
-
-    private async Task LoadCharacterAsync()
-    {
-        var response = await Http.GetAsync($"https://rickandmortyapi.com/api/character/{CharacterId}");
-
-        if (response.IsSuccessStatusCode)
-        {
-            var json = await response.Content.ReadAsStringAsync();
-            character = Newtonsoft.Json.JsonConvert.DeserializeObject<Character>(json);
-        }
-        else
-        {
-            character = null;
-        }
-    }
-}
